@@ -1,6 +1,4 @@
-# CAB202
+# CAB202 | Microprocessors and Digital Systems
 
-weekly task content + assignment work.
-
-tried to do as much work in neovim as i could but avr's libs were installed to `/usr/avr` on arch and i currently have no idea how to point clangd to 
-link headers from that directory, so alongside platformio's atrocious documentation i gave up on account of i just don't really want to spend a week screaming and crying about it.
+> could not get `avr-gcc` and related avr header library `avr-libc` (which installed to `/usr/avr` on arch thanks) to play nice with neovim lsp & completion, 
+> nothing but hate for platformio and its terrible documentation and cli >:( .   
