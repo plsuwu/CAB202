@@ -80,6 +80,98 @@ necessary to implement loops or subroutines.
 entry:
     // Write your code for Ex E2.0 below this line.
 
+    // 9669396 -> 8,  left digit -> DS1
+    // 0b11111111 -> all leds off
+    ; - Port A PIN 1: DISP LATCH
+    ; - Port C PIN 0: SPI CLK
+    ; - Port C PIN 2: SPI MOSI
+
+
+    ;    a. If the bit is a 1:
+    ;         Drive the SPI MOSI net HIGH
+    ;       If the bit is a 0:
+    ;         Drive the SPI MOSI net LOW
+    ;    b. Drive the SPI CLK net HIGH (to create a rising edge)
+    ;    c. Drive the SPI CLK net LOW (to prepare for the next rising edge)
+
+    ; 6. a. Drive the DISP LATCH net HIGH (to create a rising edge)
+
+    // test val
+    ldi r18, 0
+    ldi r19, 1
+                            // all illuminated on left digit (0b00000000)
+
+    // SPI CLK
+    ldi r20, PIN0_bm
+
+    // DISP LATCH
+    ldi r21, PIN1_bm
+
+    // SPI MOSI
+    ldi r22, PIN2_bm
+
+    // initial state: all pins LOW
+    sts PORTC_OUTCLR, r20
+    sts PORTA_OUTCLR, r21
+    sts PORTC_OUTCLR, r22
+
+    // all pins DIR output enable
+    sts PORTC_DIRSET, r20
+    sts PORTA_DIRSET, r21
+    sts PORTC_DIRSET, r22
+
+    // just to be sure - i feel like this isnt needed
+    // drive CLK - LOW to start
+    sts PORTC_OUTCLR, r20
+
+    // leave MOSI driven LOW to test
+    // sts PORTC_OUTSET, r22 // drive MOSI HIGH
+
+    // msb - pulse to send Q7 (display side)
+    sts PORTC_OUTSET, r22 // drive MOSI HIGH to set L
+
+    sts PORTC_OUTSET, r20 // pulse
+    sts PORTC_OUTCLR, r20
+    sts PORTC_OUTCLR, r22 // MOSI LOW
+
+    // Q6 - F
+    sts PORTC_OUTSET, r20
+    sts PORTC_OUTCLR, r20
+
+    // Q5 - A
+    sts PORTC_OUTSET, r20
+    sts PORTC_OUTCLR, r20
+
+    // Q4 -  B
+    sts PORTC_OUTSET, r22 // MOSI HIGH -> OFF
+    sts PORTC_OUTSET, r20
+    sts PORTC_OUTCLR, r20
+    sts PORTC_OUTCLR, r22 // MOSI LOW -> ON
+
+    // q3
+    sts PORTC_OUTSET, r20
+    sts PORTC_OUTCLR, r20
+
+    // q2
+    sts PORTC_OUTSET, r20
+    sts PORTC_OUTCLR, r20
+
+    // q1
+    sts PORTC_OUTSET, r20
+    sts PORTC_OUTCLR, r20
+
+    // LSB: q0
+    sts PORTC_OUTSET, r20
+    sts PORTC_OUTCLR, r20
+
+    // drive LOW after all bits sent
+    // again, probably not needed.
+    sts PORTC_OUTCLR, r20
+
+    // pulse disp latch - drive low > high > low (?)
+    sts PORTA_OUTCLR, r21
+    sts PORTA_OUTSET, r21
+    sts PORTA_OUTCLR, r21
 
     // Write your code for Ex E2.0 above this line.
 
