@@ -1,5 +1,9 @@
 /** CODE: Include any header files and macro definitions here. */
 
+#include <stdio.h>
+#include <stdint.h>
+#include "../include/qutyio.h"
+
 /** EX: E3.0
 
 In this week's tutorial, we used some functions from the libraries
@@ -84,8 +88,35 @@ int main(void)
 {
     /** CODE: Write your code for Ex E3.0 below this line. */
 
-    serial_init();
+   serial_init();
 
+   uint32_t state = 9669396;
+
+   for (uint16_t i = 0; i < 256; ++i) {
+
+        state = i ^ state;
+        uint8_t lsb = state & 1;
+
+        do {
+
+            state = (state << 31) | (state >> 1);
+            lsb = state & 1;
+        } while (lsb != 0 && state < 0xffffffff);
+
+        printf("%04X ", (uint16_t)state & 0xffff);
+
+        uint8_t msn = (state >> 8) & 0xf;
+        uint8_t lsn = (state >> 4) & 0xf;
+
+        // will concat to 'foobar' if both are true
+        if (msn == 9) {
+            printf("foo");
+        }
+        if (lsn == 6) {
+            printf("bar");
+        }
+        printf("\n");
+   }
     /** CODE: Write your code for Ex E3.0 above this line. */
 
     // END OF EXTENSION03 EXERCISES //
