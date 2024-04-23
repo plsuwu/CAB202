@@ -1,3 +1,6 @@
 [submodule "avremu-git"]
 	path = avremu-git
 	url = https://github.com/cab202/avremu
+[submodule "quty"]
+	path = quty
+	url = https://github.com/cab202/quty
