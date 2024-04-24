@@ -105,7 +105,7 @@ int main(void)
         if ((VPORTA.IN & PIN4_bm) == 0) {
             break;
         }
-    }; 
+    };
 
     printf("DONE! PORTA.IN = 0x%02X\n", VPORTA.IN);
 

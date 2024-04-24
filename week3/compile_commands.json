@@ -1,0 +1,8 @@
+[
+    {
+        "command": "/home/please/.platformio/packages/toolchain-atmelavr/bin/avr-gcc -x assembler-with-cpp -Os -Wall -ffunction-sections -fdata-sections -flto -mmcu=attiny1626 -DF_CPU=3333333L -DPLATFORMIO=60114 -D__AVR_DEV_LIB_NAME__=tn1626 -Iinclude -Isrc -c -o .pio/build/QUTy/src/tutorial03.o src/tutorial03.S",
+        "directory": "/home/please/Documents/QUT-IN01/semester-2/CAB202/week3",
+        "file": "src/tutorial03.S",
+        "output": ".pio/build/QUTy/src/tutorial03.o"
+    }
+]
