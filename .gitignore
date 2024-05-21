@@ -1,5 +1,7 @@
-*/**/venv
-*/**/.pio
-*/**/.vscode
-*/**/.cache
+**/target/
+**/venv/
+**/.pio/
+**/.vscode/
+**/.cache/
+
 week*/**.zip
