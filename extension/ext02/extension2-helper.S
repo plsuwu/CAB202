@@ -15,7 +15,7 @@
 ; 3. Determine the state of each segment on the 7-segment display
 ;    using the following segment mapping:
 ;
-;     -- A --           Segment | State (ON/OFF) | State of MOSI net 
+;     -- A --           Segment | State (ON/OFF) | State of MOSI net
 ;    |       |          ---------------------------------------------
 ;    F       B          A       |                |
 ;    |       |          B       |                |
@@ -51,3 +51,4 @@
 
 
 ; 6. a. Drive the DISP LATCH net HIGH (to create a rising edge)
+// 9 -> ABCDGF ->
