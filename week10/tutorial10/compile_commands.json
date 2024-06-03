@@ -1,0 +1,14 @@
+[
+    {
+        "command": "/home/please/.platformio/packages/toolchain-atmelavr/bin/avr-gcc -o .pio/build/QUTy/src/buttons.o -c -std=gnu11 -fno-fat-lto-objects -Os -Wall -ffunction-sections -fdata-sections -flto -mmcu=attiny1626 -DF_CPU=3333333L -DPLATFORMIO=60114 -D__AVR_DEV_LIB_NAME__=tn1626 -Iinclude -Isrc src/buttons.c",
+        "directory": "/home/please/Documents/QUT-IN01/semester-2/CAB202/week10/tutorial10",
+        "file": "src/buttons.c",
+        "output": ".pio/build/QUTy/src/buttons.o"
+    },
+    {
+        "command": "/home/please/.platformio/packages/toolchain-atmelavr/bin/avr-gcc -o .pio/build/QUTy/src/tutorial10.o -c -std=gnu11 -fno-fat-lto-objects -Os -Wall -ffunction-sections -fdata-sections -flto -mmcu=attiny1626 -DF_CPU=3333333L -DPLATFORMIO=60114 -D__AVR_DEV_LIB_NAME__=tn1626 -Iinclude -Isrc src/tutorial10.c",
+        "directory": "/home/please/Documents/QUT-IN01/semester-2/CAB202/week10/tutorial10",
+        "file": "src/tutorial10.c",
+        "output": ".pio/build/QUTy/src/tutorial10.o"
+    }
+]

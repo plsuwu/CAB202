@@ -2,6 +2,7 @@
 #include "uart.h"
 #include "spi.h"
 #include <stdint.h>
+#include <avr/io.h>
 
 /** Tutorial 09
 
@@ -83,6 +84,8 @@ int main(void)
 
     /** TODO: Uncomment the lines below after Ex 9.2 is completed. */
     spi_init();       // Initialise SPI
+
+    // spi_write(0b10000000);
     spi_write(0xFF);  // Clear display
 
     /** EX: 9.3
@@ -108,6 +111,15 @@ int main(void)
     truth table below. See the QUTy schematic to determine the pin to
     segment mapping.
 
+edcgbaf:
+11000000
+00100000
+
+fabgcde
+0000010
+edcgbaf
+0000101
+
        ABCDEFG
     0: 0000001
     1: 1001111
@@ -129,12 +141,6 @@ int main(void)
     E       C
     |       |
      -- D --
-
-    l = "9" =>
-    r = "6"
-
-
-
     */
 
     /** CODE: Write your code for Ex 9.3 in timer.c. */
@@ -144,18 +150,18 @@ int main(void)
     TASK: Write code below that will call timer_init() only after the
     character 'a' has been received via the UART interface.
     */
+    // char uart_in = uart_getc();
+    //
+    char u_a = uart_getc();
 
-    char is_a = 'a';
-    char uart_in = uart_getc();
-    char writer[2];
-    writer[0] = uart_in;
-    writer[1] = '\0';
-    uart_puts(writer);
-
-    if (uart_in == is_a) {
-        timer_init();
+    while (u_a != 'a') {
+        uart_getc();
     }
 
+    // PORTB.DIRSET = PIN1_bm;
+    // PORTB.OUTSET = PIN1_bm;
+
+    timer_init();
 
     /** CODE: Write your code for Ex 9.4 above this line. */
 

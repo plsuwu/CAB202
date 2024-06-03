@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stddef.h>
 
 /** EX: E4.0
 
@@ -81,7 +82,18 @@ ARGUMENTS: Arguments must be passed in the following order:
 */
 
 /** CODE: Write your code for matrix_sum() below this line. */
+void matrix_sum(int16_t* a, uint8_t dim_2x2[2], int16_t* b, int16_t* result) {
+    uint16_t rows = dim_2x2[0];
+    uint16_t cols = dim_2x2[1];
 
+    for (uint16_t i = 0; i < rows; ++i) {
+        for (uint16_t j = 0; j < cols; ++j) {
+            uint16_t index = i * cols + j;
+            result[index] = a[index] + b[index];
+        }
+    }
+
+}
 
 /** CODE: Write your code for matrix_sum() above this line. */
 
@@ -117,6 +129,18 @@ ARGUMENTS: Arguments must be passed in the following order:
 /** CODE: Write your code for matrix_add() below this line. */
 
 
+void matrix_add(int16_t* a, uint8_t* dim_2x2, int16_t addend, int16_t* result) {
+    uint16_t rows = dim_2x2[0];
+    uint16_t cols = dim_2x2[1];
+
+    for (uint16_t i = 0; i < rows; ++i) {
+        for (uint16_t j = 0; j < cols; ++j) {
+            uint16_t index = i * cols + j;
+            result[index] = a[index] + addend;
+        }
+    }
+}
+
 /** CODE: Write your code for matrix_add() above this line. */
 
 /** FUNCTION: matrix_scale() (Scalar Multiplication)
@@ -150,6 +174,17 @@ ARGUMENTS: Arguments must be passed in the following order:
 
 /** CODE: Write your code for matrix_scale() below this line. */
 
+void matrix_scale(int16_t* a, uint8_t* dim_2x2, int16_t multiplicand, int16_t* result) {
+    uint16_t rows = dim_2x2[0];
+    uint16_t cols = dim_2x2[1];
+
+    for (uint16_t i = 0; i < rows; ++i) {
+        for (uint16_t j = 0; j < cols; ++j) {
+            uint16_t index = i * cols + j;
+            result[index] = a[index] * multiplicand;
+        }
+    }
+}
 
 /** CODE: Write your code for matrix_scale() above this line. */
 
@@ -226,6 +261,26 @@ ARGUMENTS: Arguments must be passed in the following order:
 
 /** CODE: Write your code for matrix_mul() below this line. */
 
+void matrix_mul(int16_t *identity, uint8_t* dim_2x2a, int16_t* a, uint8_t* dim_2x2b, int16_t* result) {
+    uint16_t m = dim_2x2a[0];
+    uint16_t p = dim_2x2a[1];
+    uint16_t n = dim_2x2b[1];
+
+    for (uint16_t i = 0; i < m; ++i) {
+        for (uint16_t j = 0; j < n; ++j) {
+            result[i * n + j] = 0;
+        }
+    }
+
+     for (uint16_t i = 0; i < m; ++i) {
+        for (uint16_t j = 0; j < n; ++j) {
+            for (uint16_t k = 0; k < p; ++k) {
+                result[i * n + j] += identity[i * p + k] * a[k * n + j];
+            }
+        }
+    }
+
+}
 
 /** CODE: Write your code for matrix_mul() above this line. */
 

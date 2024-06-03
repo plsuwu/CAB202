@@ -3,5 +3,6 @@
 **/.pio/
 **/.vscode/
 **/.cache/
+.mypy_cache/
 
 week*/**.zip

@@ -19,4 +19,3 @@ void display_brightness(uint8_t value);        // Set display brightness
 //   Peripherals: USART0
 void serial_init(void);               // Initialise UART as stdin/stdout
 uint8_t serial_bytes_available(void); // Returns number of bytes in receive buffer
-

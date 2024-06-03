@@ -4,6 +4,7 @@
 #include <avr/io.h>
 
 #include "spi.h"
+#include "uart.h"
 
 //    1. In "spi.c", declare and implement a function spi_init() that will
 //       initialise SPI0 in unbuffered mode, such that data can be written
@@ -27,10 +28,12 @@
 
 void spi_init(void) {
     cli();
+
+
     // SPI pins => PCO..=3
     PORTMUX.SPIROUTEA = PORTMUX_SPI0_ALT1_gc;   // SCK on PC0 and MOSI on PC2 as outputs
-    PORTC.DIRSET = (PIN0_bm | PIN2_bm);
-    PORTA.DIRSET = PIN1_bm;
+    PORTC.DIR |= (PIN0_bm | PIN2_bm);
+    PORTA.DIR |= PIN1_bm;
     SPI0.CTRLA = SPI_MASTER_bm;
     SPI0.CTRLB = SPI_SSD_bm;                    // host mode i think
     SPI0.INTCTRL = SPI_IE_bm;
@@ -49,10 +52,9 @@ uint8_t spi_read(void) {
 }
 
 ISR(SPI0_INT_vect) {
-    // uint8_t data = spi_read();
-    // PORTC.OUTSET |= (PIN0_bm | PIN2_bm);
-    PORTA.OUTCLR = PIN1_bm;
-    SPI0.INTFLAGS |= SPI_IF_bm;
+    PORTC.OUT &= ~(PIN0_bm | PIN2_bm);
+    PORTA.OUT |= PIN1_bm;
+    SPI0.INTFLAGS = SPI_IF_bm;
 }
 
 

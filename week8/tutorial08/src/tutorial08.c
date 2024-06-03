@@ -44,12 +44,8 @@ void pwm_init(void) {
     PORTB.DIRSET = PIN0_bm;
 
 
-    // set TCA0 PORTMUX to PB2 (?)
     PORTMUX.TCAROUTEA = PORTMUX_TCA01_DEFAULT_gc;
-
-    // CLK_PER select /2 prescaler (1.67Mhz)
     TCA0.SINGLE.CTRLA = TCA_SINGLE_CLKSEL_DIV2_gc;
-    // single slope pwm mode, WO0, WO1 enable
     TCA0.SINGLE.CTRLB = TCA_SINGLE_WGMODE_SINGLESLOPE_gc | TCA_SINGLE_CMP1EN_bm | TCA_SINGLE_CMP0EN_bm;
     // enable overflow interrupt (INT at TOP)
     TCA0.SINGLE.INTCTRL = TCA_SINGLE_OVF_bm;

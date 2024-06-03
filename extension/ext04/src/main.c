@@ -89,27 +89,27 @@ int main(void)
     matrix_print(b, dim_2x3);
 
     matrix_zero(result, 6);
-    // matrix_add(a, dim_2x2, addend, result);
+    matrix_add(a, dim_2x2, addend, result);
     printf("A + %d =\n", addend);
     matrix_print(result, dim_2x2);
 
     matrix_zero(result, 6);
-    // matrix_sum(a, dim_2x2, identity, result);
+    matrix_sum(a, dim_2x2, identity, result);
     printf("A + I =\n");
     matrix_print(result, dim_2x2);
 
     matrix_zero(result, 6);
-    // matrix_scale(a, dim_2x2, multiplicand, result);
+    matrix_scale(a, dim_2x2, multiplicand, result);
     printf("A * %d =\n", multiplicand);
     matrix_print(result, dim_2x2);
 
     matrix_zero(result, 6);
-    // matrix_mul(identity, dim_2x2, a, dim_2x2, result);
+    matrix_mul(identity, dim_2x2, a, dim_2x2, result);
     printf("I * A =\n");
     matrix_print(result, dim_2x2);
 
     matrix_zero(result, 6);
-    // matrix_mul(identity, dim_2x2, b, dim_2x3, result);
+    matrix_mul(identity, dim_2x2, b, dim_2x3, result);
     printf("I * B =\n");
     matrix_print(result, dim_2x3);
 
