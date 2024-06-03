@@ -5,15 +5,15 @@
 
 // `uint<n>_t` is really annoying to type out and we get where they
 // come from, so i have shortened to this Rust-like syntax
-typedef unsigned long long u64;
-typedef unsigned long u32;
-typedef unsigned int u16;
-typedef unsigned char u8;
+typedef unsigned long long  u64;
+typedef unsigned long       u32;
+typedef unsigned int        u16;
+typedef unsigned char       u8;
 
-typedef long long i64;
-typedef long i32;
-typedef int i16;
-typedef char i8;
+typedef long long           i64;
+typedef long                i32;
+typedef int                 i16;
+typedef char                i8;
 
 /*
  * PER control state (debug)
@@ -21,6 +21,9 @@ typedef char i8;
 typedef enum { PER_OFF, PER_ON } per_state_t;
 volatile per_state_t per_state = PER_OFF;
 
+/*
+ * PWM init => TCA0
+ */
 void pwm_init(void) {
     PORTB.DIR = PIN0_bm | PIN5_bm | PIN1_bm;        // 0: BUZZER | 5: DISP DP | 1: DISP EN
 
@@ -38,41 +41,37 @@ void pwm_init(void) {
     TCA0.SINGLE.CTRLA |= TCA_SINGLE_ENABLE_bm;
 }
 
-
-/*
- * UART init (not correctly working)
- */
-void uart_init(void) {
-
-     // output enable TX pin
-    PORTB.DIRSET = PIN2_bm;
-    // 9600 baud
-    USART0.BAUD = 1389;
-    // enable RX interrupt
-    USART0.CTRLA = USART_RXCIE_bm;
-    // enable RX and TX
-    USART0.CTRLB = USART_RXEN_bm | USART_TXEN_bm;
-}
-
-/*
- * RW functions (blocking)
- */
 u8 uart_getc(void) {
-    while (!(USART0.STATUS & USART_RXCIF_bm)); // wait data
-
+    while (!(USART0.STATUS & USART_RXCIF_bm));
     return USART0.RXDATAL;
 }
 
 void uart_putc(u8 c) {
-    while (!(USART0.STATUS & USART_DREIF_bm)); // wait for TX.DATA empty
-
+    while (!(USART0.STATUS & USART_DREIF_bm));
     USART0.TXDATAL = c;
+}
+
+void uart_puts(char *s) {
+    char *c = s;
+
+    while (*c != '\0') {
+        uart_putc(*c);
+        c++;
+    }
+}
+
+/*
+ * UART init (not working correctly atm)
+ */
+void uart_init(void) {
+    USART0.BAUD = 1389;                             // 9600 baud
+    PORTB.DIRSET = PIN2_bm;                         // output enable TX pin
+    USART0.CTRLA = USART_RXCIE_bm;                  // enable RX interrupt
+    USART0.CTRLB = USART_RXEN_bm | USART_TXEN_bm;   // enable RX and TX
 }
 
 static int stdio_putchar(char c, FILE *stream);
 static int stdio_getchar(FILE *stream);
-
-// declare stream for stdio -> FDEV_SETUP_STREAM macro
 static FILE stdio = FDEV_SETUP_STREAM(stdio_putchar, stdio_getchar, _FDEV_SETUP_RW);
 
 static int stdio_putchar(char c, FILE *stream) {
@@ -84,11 +83,14 @@ static int stdio_getchar(FILE *stream) {
     return uart_getc();
 }
 
-void stdio_init(void) {
+void stdio_init() {
     stdout = &stdio;
     stdin = &stdio;
 }
 
+/*
+ * ADC init => ADC0
+ */
 void adc_init(void) {
 
     // potentiometer config
@@ -106,6 +108,9 @@ volatile i8 DISP_LBYTE = 0b10000001;              // all LED segs + set 7th bit 
 volatile i8 DISP_RBYTE = 0b00000001;              // all LED segs + unset 7th bit -> RHS
 volatile u8 DISP_CSIDE = 0;                       // bool to alternate byte to send
 
+/*
+ * SPI INIT => VPORTC.OUT on PIN0 (SPI_CLK) | PIN2 (MOSI)
+ */
 void spi_init(void) {
 
     //  (PIN0: SPI_CLK | PIN2: MOSI)
@@ -189,7 +194,7 @@ ISR(TCB0_INT_vect) {
 }
 
 /*
- * INIT - PORTA button configuration
+ * PORTA init => PIN4/PIN5/PIN6/PIN7 -> pullup resistor-enabled
  */
 void button_init(void) {
 
@@ -202,7 +207,7 @@ void button_init(void) {
 }
 
 /*
- * INIT - TCB0 configuration
+ * TCB init => TCB0/TCB1 configured in periodic interrupt mode
  */
 void tcb_init(void) {
 
@@ -229,13 +234,15 @@ int main(void) {
     // disable interrupts globally while configuring interrupt-generating peripherals
 
     cli();
-    uart_init();
-    stdio_init();
     tcb_init();                                         // configure + enable TCB0/1 counter
     pwm_init();                                         // configure + enable PWM (buzzer & disp)
     spi_init();                                         // configure + enable PORTC peripherals (SPI stuff)
     button_init();                                      // configure + enable PORTA buttons
     adc_init();                                         // configure + enable ADC
+
+    /* uart + stdio_dbg config */
+    uart_init();
+    stdio_init();
 
     // reenable interrupts
     sei();
