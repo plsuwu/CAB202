@@ -3,12 +3,12 @@
 
 #include "init.h"
 
-
 /*
  * PWM init => TCA0
  */
 void pwm_init(void) {
-    PORTB.DIR = PIN0_bm | PIN5_bm | PIN1_bm;        // 0: BUZZER | 5: DISP DP | 1: DISP EN
+    PORTB.DIR = PIN0_bm |/* PIN5_bm  |*/ PIN1_bm;        // 0: BUZZER | 5: DISP DP | 1: DISP EN
+    // PORTMUX.TCAROUTEA = PORTMUX_TCA02
 
     // waveform output controls:
     //
@@ -17,11 +17,11 @@ void pwm_init(void) {
     //
     TCA0.SINGLE.CTRLB = TCA_SINGLE_WGMODE_SINGLESLOPE_gc | TCA_SINGLE_CMP0EN_bm | TCA_SINGLE_CMP1_bm;
     TCA0.SINGLE.CTRLA = TCA_SINGLE_CLKSEL_DIV2_gc;
-    TCA0.SINGLE.PER = 4281;
+    TCA0.SINGLE.PER = Eh_CCNT;                       // start with high E
     TCA0.SINGLE.CMP1 = 0;                           // display disabled
     TCA0.SINGLE.CMP0 = 0;                           // buzzer disabled
 
-    TCA0.SINGLE.CTRLA |= TCA_SINGLE_ENABLE_bm;
+    TCA0.SINGLE.CTRLA |= TCA_SINGLE_ENABLE_bm;      // set TCA_SINGLE enable bit
 }
 
 /*
@@ -33,7 +33,7 @@ void tcb_init(void) {
     //
     TCB0.CTRLB = TCB_CNTMODE_INT_gc;                    // configure in periodic interrupt mode
     TCB0.CTRLA = TCB_CLKSEL_DIV2_gc;                    // CLKSEL / 2
-    TCB0.CCMP = 4281;                                   // set period
+    TCB0.CCMP = 4167;                                   // set period (~400Hz)
     TCB0.INTCTRL = TCB_CAPT_bm;                         // invoke CAPT ISR @ CCMP
     TCB0.CTRLA |= TCB_ENABLE_bm;                        // enable (avoid overwriting CLKSEL using `|=` )
 
@@ -42,7 +42,7 @@ void tcb_init(void) {
     //
     TCB1.CTRLB = TCB_CNTMODE_INT_gc;
     TCB1.CTRLA = TCB_CLKSEL_DIV2_gc;
-    TCB1.CCMP = 4281;                                   // -> basically a random number
+    TCB1.CCMP = 33333;
     TCB1.INTCTRL = TCB_CAPT_bm;
     TCB1.CTRLA |= TCB_ENABLE_bm;
 }

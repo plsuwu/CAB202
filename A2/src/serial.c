@@ -1,7 +1,8 @@
 #include <avr/interrupt.h>
 #include <avr/io.h>
 
-#include "typing.h"
+#include "serial.h"
+#include "types.h"
 
 
 u8 uart_getc(void) {
