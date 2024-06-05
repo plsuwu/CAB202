@@ -92,9 +92,6 @@ void spi_init(void) {
  * PORTA init => PIN4/PIN5/PIN6/PIN7 -> pullup resistor-enabled
  */
 void button_init(void) {
-
-    // pullup en. all buttons
-    //
     PORTA.PIN4CTRL |= PORT_PULLUPEN_bm;
     PORTA.PIN5CTRL |= PORT_PULLUPEN_bm;
     PORTA.PIN6CTRL |= PORT_PULLUPEN_bm;

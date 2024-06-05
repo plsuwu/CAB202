@@ -37,8 +37,7 @@ void check_edge(u8 *sample) {
 }
 
 u8 read_spi(void) { return SPI0.DATA; }
-
-void write_spi(u8 byte) { SPI0.DATA = byte; }
+// void write_spi(u8 byte) { SPI0.DATA = byte; }
 
 ISR(TCB1_INT_vect) {
     write_spi(disp_seg);
@@ -106,8 +105,8 @@ ISR(TCB0_INT_vect) {
 }
 
 ISR(SPI0_INT_vect) {
-    // latch data
 
+    // latch data
     PORTA.OUT &= ~PIN1_bm; // drive high to begin pulse
     PORTA.OUT |= PIN1_bm;  // drive back low to finish pulse
 

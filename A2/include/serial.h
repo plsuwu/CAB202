@@ -1,13 +1,17 @@
+#ifndef UART_H
+#define UART_H
+
+#include "types.h"
 #include <avr/interrupt.h>
 #include <avr/io.h>
-#include "types.h"
-
-#ifndef SERIAL_H
-#define SERIAL_H
 
 
-u8 uart_getc(void);
-void uart_putc(u8 c);
-void uart_puts(char *s);
+void uart_init(void);
 
-#endif // SERIAL_H
+void uart_tx(char data);
+char uart_rx(void);
+
+// u8 read_spi(void);
+void write_spi(u8 data);
+
+#endif // UART_H

@@ -65,17 +65,17 @@ void set_state_struct(u8 step, CurrentState* curr) {
             break;
 
         case 4:
-            curr->tca_perbuf = MIN_CLK;
-            curr->tone_cmpbuf = 0;
-            curr->disp_cmpbuf = MIN_CLK + 1;
+            curr->tca_perbuf = E_HI_CLK_BASE;
+            curr->tone_cmpbuf = 2240;
+            curr->disp_cmpbuf = E_HI_CLK_BASE + 1;
             curr->disp_segment = OK;
             curr->disp_side = TGL;
             break;
 
         case 5:
-            curr->tca_perbuf = MIN_CLK;
-            curr->tone_cmpbuf = 0;
-            curr->disp_cmpbuf = MIN_CLK + 1;
+            curr->tca_perbuf = E_HI_CLK_BASE;
+            curr->tone_cmpbuf = 2240;
+            curr->disp_cmpbuf = E_HI_CLK_BASE + 1;
             curr->disp_segment = FL;
             curr->disp_side = TGL;
             break;
@@ -92,15 +92,12 @@ void stop_tone_disp(void) {
 
 void play_sequence(u8 length) {
     // run a round of the game
-
-    printf("state_struct using segment(s): \n");
     for (u8 i = 0; i < length; ++i) {
         tca_prev_period = TCA0.SINGLE.PER;
-        printf("\\%u        -> [%u]\n", i, current_state.disp_segment);
+        printf("[i->%u]: setting state_struct to use step '%u'\n", i, sequence[i]);
         set_state_struct(sequence[i], &current_state);
         play_tone(&current_state, tca_prev_period);
         display_segment(&current_state, tca_prev_period);
-
         // this is probably ok for debug but we ideally calculate clks
         _delay_ms(DEBUG_DELAY);
         stop_tone_disp();
@@ -174,47 +171,24 @@ void game_tick(void) {
         u8 sequence_matches = compare_sequence();
         if (sequence_matches) {
             // ok -> incr. sequence length
-            u8 okstate = 4;
-            set_state_struct(okstate, &current_state);
-            printf(">> disp_segment=> [%u]\n", current_state.disp_segment);
-
+            printf("OK\n");
+            set_state_struct(4, &current_state);
             display_segment(&current_state, tca_prev_period);
-
-            PORTB.OUTCLR = PIN0_bm | PIN1_bm;
-            TCA0.SINGLE.CMP1BUF = TCA0.SINGLE.PER + 1;
-            _delay_ms(DEBUG_DELAY);
-
-            stop_tone_disp();
-
-            printf("OK\n\n");
+            _delay_ms(DEBUG_DELAY_HALF);
             ++sequence_length;
             generate_sequence();
             game_phase = SEQUENCE;
 
         } else {
             // fail -> restart
-            u8 failstate = 5;
-
-            set_state_struct(failstate, &current_state);
+            set_state_struct(5, &current_state);
             display_segment(&current_state, tca_prev_period);
-
-            PORTB.OUTCLR = PIN0_bm | PIN1_bm;
-            TCA0.SINGLE.CMP1BUF = TCA0.SINGLE.PER + 1;
             _delay_ms(DEBUG_DELAY_HALF);
-
-            stop_tone_disp();
-            _delay_ms(DEBUG_DELAY_HALF);
-
             display_score(sequence_length);
-            PORTB.OUTCLR = PIN0_bm | PIN1_bm;
-            TCA0.SINGLE.CMP1BUF = TCA0.SINGLE.PER + 1;
             _delay_ms(DEBUG_DELAY_HALF);
-
             stop_tone_disp();
 
-            printf(">> disp_segment=> [%u]\n", current_state.disp_segment);
-            printf("FAIL\n\n");
-
+            printf("FAIL\n");
             game_start();
         }
     }
