@@ -7,15 +7,14 @@
 
 #include "game.h"
 #include "types.h"
+#include "timer.h"
 #include "serial.h"
 
-static bool_t display_side_toggle = false;
-static u8 display_data = 0xFF;
-static volatile u8 display_side = 1;
-static volatile u8 display_lhs = 0b11111111;
-static volatile u8 display_rhs = 0b01111111;
+volatile u8 left_byte = DISP_OFF | DISP_LHS_BIT;
+volatile u8 right_byte = DISP_OFF;
+// volatile digit_side_t display_side = left;
 
-const u8 number_segment_map[10] = {
+const u8 segment_map[10] = {
 //  00SFABGCDE
     0b00001000, // 0
     0b01101011, // 1
@@ -30,98 +29,64 @@ const u8 number_segment_map[10] = {
 };
 
 void display_score(u8 score) {
-    u8 in_range = score % 100;
-    u8 tens = in_range / 10;
-    u8 ones = in_range % 10;
+    // u8 range = score % 100;
 
-    u8 tens_segment = (number_segment_map[tens] | 1);
-    u8 ones_segment = number_segment_map[ones];
+    u8 tens_segment = DISP_OFF;
+    u8 tens;
+    u8 ones = score % 10;
+    u8 ones_segment = segment_map[ones];
 
-    display_lhs = tens_segment;
-    display_rhs = ones_segment;
-    display_side_toggle =  true;
-
-    printf("lhs -> [%u] : [%u]\n", tens, tens_segment);
-    printf("rhs -> [%u] : [%u]\n", ones, ones_segment);
-
-    PORTB.OUTCLR = PIN0_bm | PIN1_bm;
-    TCA0.SINGLE.CMP1BUF = TCA0.SINGLE.PER + 1;
-
-    write_spi(display_lhs);
-    _delay_ms(DEBUG_DELAY_HALF);
-}
-
-void display_segment(CurrentState *curr, u8 prev_period) {
-    if (curr->disp_side == TGL) {
-        printf("TGL DISP\n");
-        u8 write_segment = (curr->disp_segment | display_side);
-        display_data = write_segment;
-
-    } else {
-        printf("NOT TGL DISP\n");
-        display_side_toggle = false;
-        u8 write_segment = (curr->disp_segment | curr->disp_side);
-        display_data = write_segment;
+    if (score >= 10) {
+        tens = score / 10;
+        tens_segment = segment_map[tens];
     }
 
-    PORTB.OUTCLR = PIN0_bm | PIN1_bm;
-    TCA0.SINGLE.CMP1BUF = TCA0.SINGLE.PER + 1;
-    write_spi(display_data);
-    _delay_ms(DEBUG_DELAY_HALF);
-    // _delay_ms(DEBUG_DELAY);
-
+    update_display(tens_segment, ones_segment);
+    elapsed_time = 0;
+    peripheral_activity = true;
 }
 
-// init SPI PORT & ROUTE to DISP, enable interrupt generation on data TX to SPI CLK/MOSI
-void spi_disp_init(void) {
+void update_display(const u8 left, const u8 right) {
+    left_byte = left | DISP_LHS_BIT;
+    right_byte = right;
 
-    // (PIN0 : SPI_CLK | PIN2 : MOSI)
-    VPORTC.OUT |= PIN0_bm | PIN2_bm;                // drive LOW
-    VPORTC.DIR |= PIN0_bm | PIN2_bm;                // enable CLK/MOSI as output
-
-    PORTMUX.SPIROUTEA = PORTMUX_SPI0_ALT1_gc;       // set port multiplexer to ALT route
-                                                    // ........... (-> PC0,PC1,PC2,PC3)
-
-    SPI0.CTRLB = SPI_SSD_bm;                        // disable client select line
-    SPI0.INTCTRL = SPI_IE_bm;                       // enable SPI interrupts (SPI DATA latch)
-
-    SPI0.CTRLA |= SPI_MASTER_bm | SPI_ENABLE_bm;    // enable using SPI as master
+    // elapsed_time = 0;
 }
 
-// TCB1 timer/counters -> latch/MOSI/CLK
-void tcb_disp_init(void) {
+void display_step(u8 step) {
+    static u8 pattern_map[4][2] = {
+        {DISP_BITS_FE, DISP_OFF}, // segments E & F => left bar
+        {DISP_BITS_BC, DISP_OFF}, // segments C & C => right bar
+        {DISP_OFF, DISP_BITS_FE},
+        {DISP_OFF, DISP_BITS_BC},
+    };
 
-    // TCB1 in periodic interrupt mode
-    TCB1.CTRLB = TCB_CNTMODE_INT_gc;
-    TCB1.CTRLA = TCB_CLKSEL_DIV2_gc;
-    TCB1.CCMP = 16667;
-    TCB1.INTCTRL = TCB_CAPT_bm;
-    TCB1.CTRLA |= TCB_ENABLE_bm;
+    update_display(pattern_map[step][0], pattern_map[step][1]);
 }
+
 
 // SPI INT latch pulse handler
 ISR(SPI0_INT_vect) {
 
     // latch data on PIN1
-    PORTA.OUT &= ~PIN1_bm; // drive high - pulse start
-    PORTA.OUT |= PIN1_bm;  // drive low - pulse end
+    PORTA.OUTCLR = PIN1_bm; // drive high - pulse start
+    PORTA.OUTSET = PIN1_bm;  // drive low - pulse end
 
     SPI0.INTFLAGS = SPI_IF_bm; // interrupt ack
 }
 
 ISR(TCB1_INT_vect) {
-    if (display_side_toggle) {
-        if (display_side) {
-            write_spi(display_lhs);
-        } else {
-            write_spi(display_rhs);
-        }
-        display_side ^= display_side;
 
+    static volatile digit_side_t current_side = left;
+
+    if (current_side == left) {
+
+        SPI0.DATA = left_byte;
     } else {
-        write_spi(display_data);
+
+        SPI0.DATA = right_byte;
     }
 
+    current_side ^= 1;
     TCB1.INTFLAGS = TCB_CAPT_bm;
 }
-

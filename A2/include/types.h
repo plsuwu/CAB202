@@ -14,11 +14,6 @@ typedef     int16_t         i16;
 typedef     int8_t          i8;
 
 typedef enum {
-    PER_OFF,
-    PER_ON
-} per_state_t;
-
-typedef enum {
     false = 0,
     true = 1
 } bool_t;

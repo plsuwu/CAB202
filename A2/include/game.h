@@ -6,11 +6,18 @@
 
 #include "types.h"
 
-#define DISP_LHS_BIT 0b10000000 // bit to set side to LHS
 
-#define DISP_BITS_FE 0b00111110 // left segments F & E
-#define DISP_BITS_BC 0b01101011 // right segments B & C
-#define DISP_BITS_OK 0b00101010 // F, E, B, C segments (sequence OK)
+#define DISP_SEG_B 0b01101111
+#define DISP_SEG_C 0b01111011
+#define DISP_SEG_E 0b01111110
+#define DISP_SEG_F 0b00111111
+#define DISP_OFF 0b01111111
+#define DISP_LHS_BIT (1 << 7) // bit to set side to LHS
+
+#define DISP_BITS_FE (DISP_SEG_E & DISP_SEG_F) // left segments F & E
+#define DISP_BITS_BC (DISP_SEG_B & DISP_SEG_C) // right segments B & C
+#define DISP_BITS_OK ~DISP_OFF // F, E, B, C segments (sequence OK)
+// #define DISP_BITS_OK (DISP_BITS_FE & DISP_BITS_BC) // F, E, B, C segments (sequence OK)
 #define DISP_BITS_FL 0b01110111 // G segment (sequence fail)
 
 #define RESULT_OK 0x4
@@ -18,44 +25,38 @@
 #define LFSR_SEED 0x09669396
 #define LFSR_MASK 0xE2023CAB
 #define SEQUENCE_MAX 255
+
 #define DEBUG_DELAY 250        // ms
 #define DEBUG_DELAY_HALF 125    // ms
 
 typedef enum {
-    IDLE,
+    START,
     SEQUENCE,
-    USER,
-    RESULT
-    // PASS,
-    // FAIL
+    AWAIT_INPUT,
+    RESULT,
+    OK,
+    FAIL_SEGMENT,
+    FAIL_SCORE
 } game_phase_t;
 
 typedef enum {
-    FE = DISP_BITS_FE,
-    BC = DISP_BITS_BC,
-    OK = DISP_BITS_OK,
-    FL = DISP_BITS_FL,
-} segment_t;
-
-typedef enum {
     LHS = DISP_LHS_BIT,
-    RHS = 0,
-    TGL = 0xFF
+    RHS = 0b00000000,
+    TGL = 0xFF,
 } disp_side_t;
 
-typedef struct {
-    // u16 tca_prev_per;
-    u16 tca_perbuf;
-    u16 tone_cmpbuf;
-    u16 disp_cmpbuf;
-    segment_t disp_segment;
-    disp_side_t disp_side;
-} CurrentState;
-
+bool_t peripheral_activity;
 game_phase_t game_phase;
+u8 sequence[SEQUENCE_MAX];
+u8 user_input[SEQUENCE_MAX];
+u8 sequence_length;
+u8 sequence_idx;
+u8 user_idx;
+u32 lfsr_state;
+
 
 void game_init(void);
-void game_start(void);
+// void game_start(void);
 void game_tick(void);
 
 #endif  // GAME_H

@@ -6,6 +6,8 @@
 
 #include "types.h"
 
-u8 lfsr_next(u32 *current_state, u8 *sequence_length);
+u8 set_step(u32 *state);
+// coid generate_step(void);
+void reset_lfsr(void);
 
 #endif  // LFSR_H
