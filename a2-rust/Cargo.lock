@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "a2-r"
+name = "a2-rust"
 version = "0.1.0"

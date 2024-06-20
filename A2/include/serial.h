@@ -1,5 +1,5 @@
-#ifndef UART_H
-#define UART_H
+#ifndef SERIAL_H
+#define SERIAL_H
 
 #include "types.h"
 #include <avr/interrupt.h>
@@ -14,4 +14,4 @@ char uart_rx(void);
 // u8 read_spi(void);
 void write_spi(u8 data);
 
-#endif // UART_H
+#endif // SERIAL_H
