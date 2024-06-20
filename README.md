@@ -1,8 +1,8 @@
-# CAB202 | Microprocessors and Digital Systems
+# CAB202 - Microprocessors and Digital Systems
 
-> coursework for CAB202
+> general coursework and notes and stuff for CAB202
 
-This README contains some potentially handy notes on things like
+this README contains some potentially handy notes on things like
 - using the CAB202 QUTy emulator,
 - neovim LSP setup,
 - pio setup,
@@ -37,7 +37,7 @@ let re_events = Regex::new("@([0-9A-F-a-f]+)\\s+(.+):\\s+(.+)\\n+").unwrap();
 @000000000002 S1: RELEASE
 ```
 
-> see `events-example.txt`
+> see `misc/events-example.txt`
 
 **assuming you have built the `firmware.hex` with `pio run`:**
 
