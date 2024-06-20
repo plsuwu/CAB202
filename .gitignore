@@ -1,8 +1,9 @@
-**/target/
-**/venv/
-**/.pio/
-**/.vscode/
-**/.cache/
-.mypy_cache/
+*/**/target
+*/**/venv
+*/**/.pio
+*/**/*.zip
+*/**/.vscode
+*/**/.cache
+.mypy_cache
 
 week*/**.zip
